@@ -8,5 +8,5 @@ Graph Neural Networks for CP
 4. [PyTorch Metrics](https://torchmetrics.readthedocs.io/en/stable/pages/quickstart.html)
 
 #### How to run  
-1. For Homogenous GNN `ipython create_graphs` -- -input_file=kinematics_lowlevel_ttA.csv (same for other two files) and move created files inside the `GNN` directory.  
+1. For Homogenous GNN `ipython create_graphs.py -- -input_file=kinematics_lowlevel_ttA.csv` (same for other two files) and move created files inside the `GNN` directory.  
 2. run `ipython main.py -- -n=3` for multiclass classification or `ipython main.py -- -n=2` for binary classification.  
