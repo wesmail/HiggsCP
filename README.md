@@ -15,8 +15,8 @@ Follow these steps to set up your environment and start analyzing the Higgs boso
 Clone this repository to your local machine using the following command:
 
 ```bash
-git clone <repository-url>
-cd <repository-name>
+git clone https://github.com/wesmail/HiggsCP.git
+cd HiggsCP
 ```
 
 ### Step 2: Install Conda
