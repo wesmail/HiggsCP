@@ -43,7 +43,7 @@ def load_events(root_dir, channel="S", angle=""):
 
     events = []
 
-    n_events = 10000  # sig_angluar_distribution.shape[0]
+    n_events = sig_angluar_distribution.shape[0]
     for item in tqdm(
         range(n_events), total=n_events, desc="Processing " + channel + " Events "
     ):
