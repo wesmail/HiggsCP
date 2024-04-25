@@ -70,7 +70,7 @@ If you wish to train models for all angles at once, you can use the `train_all_a
 ```
 
 ### Testing the Trained Model
-To test a trained model, you need to provide the path to the trained model's checkpoint file to the run.sh script. For example, to test the model trained on angle `0`, use the following command:
+To test a trained model, you need to provide the path to the trained model's checkpoint file to the `run.sh` script. For example, to test a model trained on angle `0` can be something like the following line, where you need to adjust the `ckpt_path` where the trained model is:
 
 ```bash
 ./run.sh --mode "test" --ckpt_path "h2tt_angle_0_results/version_0/checkpoints/epoch=0-step=109.ckpt" --h5_file "files/data_0.hdf5"
