@@ -16,27 +16,37 @@ ACTIVATION = "softmax"
 
 
 class HeteroGCN(torch.nn.Module):
-    def __init__(self, h_feat=16, num_classes=2):
+    def __init__(self, h_feat=16, num_classes=2, n_heads=None, dropout=0.1):
         super(HeteroGCN, self).__init__()
         self.conv1 = torch_geometric.nn.GraphConv((-1, -1), h_feat)
         self.conv2 = torch_geometric.nn.GraphConv((-1, -1), h_feat)
         self.conv3 = torch_geometric.nn.GraphConv((-1, -1), h_feat)
 
+        self.batch_norm1 = torch.nn.BatchNorm1d(h_feat)
+        self.batch_norm2 = torch.nn.BatchNorm1d(h_feat)
+
+        self.dropout = dropout
+
         self.pool = torch_geometric.nn.SumAggregation()
         self.clf = torch.nn.Linear(h_feat, num_classes)
 
-    def forward(self, x, edge_index, batch):
+        self.out = torch.nn.Softmax(dim=1)
+
+    def forward(self, x, edge_index, batch=None):
         h = self.conv1(x, edge_index)
+        h = self.batch_norm1(h)
         h = F.leaky_relu(h)
         h = self.conv2(h, edge_index)
+        h = self.batch_norm2(h)
         h = F.leaky_relu(h)
         h = self.conv3(h, edge_index)
 
-        h = F.dropout(h, p=0.5, training=self.training)
+        h = F.dropout(h, p=self.dropout, training=self.training)
         h = self.pool(h, batch)
+
         h = self.clf(h)
 
-        return h
+        return self.out(h)
 
 
 class HeteroTConv(LightningModule):
@@ -50,13 +60,13 @@ class HeteroTConv(LightningModule):
         self.batch_norm3 = torch.nn.BatchNorm1d(h_feat * n_heads)
 
         self.dropout = torch.nn.Dropout(p=dropout)
-        self.activation = torch.nn.PReLU()
+        self.activation = torch.nn.LeakyReLU()
 
         self.pool = torch_geometric.nn.SumAggregation()
         self.clf = torch.nn.Sequential(
             torch.nn.Linear(h_feat * n_heads, h_feat),
             torch.nn.BatchNorm1d(h_feat),
-            torch.nn.PReLU(),
+            torch.nn.LeakyReLU(),
             torch.nn.Linear(h_feat, num_classes),
         )
 
@@ -88,6 +98,8 @@ class HeteroGNN(LightningModule):
         dropout=0.1,
         batch_size=32,
         learning_rate=0.0001,
+        scheduler_step=5,
+        angle=None,
     ) -> None:
         super().__init__()
         self.h_feat = h_feat
@@ -96,15 +108,19 @@ class HeteroGNN(LightningModule):
         self.num_classes = num_classes
         self.batch_size = batch_size
         self.lr = learning_rate
+        self.scheduler_step = scheduler_step
+        self.angle = angle
 
         self.metadata = (
-            ["pion", "tau", "higgs"],
+            ["pion", "tau", "met", "higgs"],
             [
                 ("higgs", "decays_to", "tau"),
-                ("tau", "decays_to", "pion"),
                 ("tau", "connects_to", "tau"),
+                ("tau", "decays_to", "pion"),
+                ("tau", "decays_to", "met"),
                 ("tau", "rev_decays_to", "higgs"),
                 ("pion", "rev_decays_to", "tau"),
+                ("met", "rev_decays_to", "tau"),
             ],
         )
 
@@ -142,7 +158,10 @@ class HeteroGNN(LightningModule):
         optimizer = torch.optim.AdamW(
             self.model.parameters(), lr=self.lr, weight_decay=0.001
         )
-        return optimizer
+        scheduler = torch.optim.lr_scheduler.StepLR(
+            optimizer, step_size=self.scheduler_step, gamma=0.8
+        )
+        return {"optimizer": optimizer, "lr_scheduler": scheduler}
 
     def training_step(self, data, batch_idx) -> STEP_OUTPUT:
         hetero, labels = data[0], data[1]
