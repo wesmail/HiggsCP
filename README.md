@@ -19,9 +19,9 @@ git clone https://github.com/wesmail/HiggsCP.git
 cd HiggsCP
 ```
 
-### Step 2: Install Conda
+### Step 2: Install Mamba
 
-If you do not have Miniconda or Anaconda installed, download and install it from [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or [Anaconda](https://www.anaconda.com/products/individual) respectively.
+If you do not have Mamba installed, download and install it by following the instructions at [Mamba Installation](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html).
 
 ### Step 3: Set Up Your Environment
 
@@ -30,12 +30,12 @@ This project relies on several dependencies listed in `environment.yml`, includi
 To install all dependencies at once and create a Conda environment named `h2ttbar`, run the following command in your terminal:
 
 ```bash
-conda env create -f environment.yml
+mamba env create -f environment.yml
 ```
 
 ### Step 4: Activate the Environment
 ```bash
-conda activate h2ttbar
+mamba activate h2ttbar
 ```
 
 ## Usage
