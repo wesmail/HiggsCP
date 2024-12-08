@@ -41,7 +41,7 @@ mamba activate h2ttbar
 ## Usage
 
 ### Download the Data
-You need first to download the data and store it in the `files/` directory. The data is stored in [Google Drive](https://drive.google.com/drive/folders/1Sba8uLfluBHdNO2tnSuCot5lKS06B0tB?usp=sharing).
+You need first to download the data and store it in the `files/` directory. The data is stored in [Google Drive](https://drive.google.com/drive/folders/1VRsxIwyHFTY7i629VFLJt84UyCtn6QEP?usp=sharing).
 
 ### Training the Model
 
